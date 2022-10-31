@@ -1,0 +1,32 @@
+* {
+    box-sizing: border-box;
+}
+
+.start {
+    display: block;
+    margin: 10vh auto;
+}
+
+.board {
+    display: flex;
+    width: 30%;
+    aspect-ratio: 1 / 1;
+    margin: 5vh auto;
+    flex-wrap: wrap;
+    row-gap: 0;
+    column-gap: 0;
+}
+
+.tile {
+    display: flex;
+    border: 1px solid black;
+    aspect-ratio: 1;
+    width: calc(100% / 3);
+    justify-content: center;
+    align-items: center;
+    font-size: 2vw;
+}
+
+.big {
+    flex-wrap: wrap;
+}
