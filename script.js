@@ -1,7 +1,8 @@
-import preset from "./medium.json" assert {type: 'json'} 
+import preset from "./stages/hard.json" assert {type: 'json'} 
 
 let board = document.querySelector('.board')
 let start = document.getElementById('start')
+let reset = document.getElementById('reset')
 let tiles = []
 let bigTiles = []
 
@@ -44,15 +45,28 @@ preset.forEach(n => {
     })
 })
 
-let movesMade = 1
+let movesMade
 let emptyTiles
 start.addEventListener('click', startSolve)
-function startSolve(){
+reset.addEventListener('click', resetSolve)
+
+function startSolve() {
+    movesMade = 1
     while (movesMade > 0) {
         movesMade = 0
         findNakedSingles()
         findHiddenSingles()
     }
+}
+
+function resetSolve() {
+    let resetTiles = tiles.filter(t => {
+        return !t.classList.contains('preset')
+    })
+    resetTiles.forEach(t => {
+        t.innerText = ''
+        t.dataset.possibleNum = []
+    })
 }
 
 function updateEmptyTiles() {
@@ -80,9 +94,9 @@ function checkForPossibleNumbers() {
     })
 }
 
-function findNakedSingles() {
+function findNakedSingles() { //find tiles with only one possibility
     updateEmptyTiles()
-    let singleTiles = emptyTiles.filter(t => {
+    let singleTiles = emptyTiles.filter(t => { 
         return t.dataset.possibleNum.length == 1
     })
     if (singleTiles.length > 0) {
@@ -93,7 +107,7 @@ function findNakedSingles() {
     }
 }
 
-function findHiddenSingles() {
+function findHiddenSingles() { //find tiles where the unplaced number in the bigtile has only one possibility
     updateEmptyTiles()
     bigTiles.forEach(bt => {
         let allValues = []
@@ -109,7 +123,9 @@ function findHiddenSingles() {
             })
         })
         let count = {}
-        allValues.forEach(n => {count[n] = (count[n] || 0) + 1})
+        allValues.forEach(n => {
+            count[n] = (count[n] || 0) + 1
+        })
         for (const key in count) {
             if (count[key] == 1) {
                 empty.forEach(t => {

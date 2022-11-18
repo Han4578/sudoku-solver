@@ -1,0 +1,38 @@
+[
+    {
+        "location": ["d1", "c7", "h8", "i3"],
+        "value": 1
+    },
+    {
+        "location": ["b9", "d8"],
+        "value": 2
+    },
+    {
+        "location": ["a4", "c3", "h9", "i2"],
+        "value": 3
+    },
+    {
+        "location": ["c6", "e4", "f3"],
+        "value": 4
+    },
+    {
+        "location": [],
+        "value": 5
+    },
+    {
+        "location": ["a6", "b3", "d5", "e2", "g1"],
+        "value": 6
+    },
+    {
+        "location": ["f2", "g9", "h3"],
+        "value": 7
+    },
+    {
+        "location": ["a3", "e9", "i8"],
+        "value": 8
+    },
+    {
+        "location": ["c8", "f4", "h6", "i7"],
+        "value": 9
+    }
+]
