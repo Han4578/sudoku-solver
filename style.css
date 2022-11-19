@@ -4,7 +4,7 @@
 
 button {
     display: inline;
-    margin: 10vh auto;
+    margin: 5vh auto;
 }
 
 .board {
@@ -36,7 +36,20 @@ button {
     color: black !important;
 }
 
-.options {
+.options, #stages {
     display: flex;
     justify-content: space-around;
+}
+
+.difficulty {
+    aspect-ratio: 2 / 1;
+    padding: 0.5vw;
+    width: 10vw;
+    border-radius: 10%;
+    border: 1px solid black;
+    background-color: rgb(131, 250, 250);
+}
+
+.difficulty:hover {
+    background-color: rgb(24, 171, 171);
 }

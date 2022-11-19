@@ -1,10 +1,14 @@
-import preset from "./stages/hard.json" assert {type: 'json'} 
+import {medium, hard, evil} from "./stages/index.js"
 
 let board = document.querySelector('.board')
 let start = document.getElementById('start')
 let reset = document.getElementById('reset')
+let current = document.getElementById('current')
+let stageMenu = document.getElementById('stages')
 let tiles = []
 let bigTiles = []
+let stages = [medium, hard, evil]
+let preset = evil
 
 for (let a = 1; a <= 9; a++) {
     let bigTile = document.createElement('div')
@@ -38,13 +42,23 @@ for (let a = 1; a <= 9; a++) {
     bigTiles.push(bigTile)
 }
 
-preset.forEach(n => {
+stages.forEach(s => {
+    let button = document.createElement('button')
+    button.classList.add('difficulty')
+    button.innerText = s[0]
+    button.addEventListener("click", () => {changeDifficulty(s)})
+    stageMenu.appendChild(button)
+})
+
+for (let i = 1; i < preset.length; i++) {
+    const n = preset[i];
     n.location.forEach(l => {
         let tile = document.getElementById(l)
         tile.innerText = n.value
         tile.classList.add('preset')
     })
-})
+}
+//-----------------------------------------------------------------------------------------------------------
 
 let movesMade
 let emptyTiles
@@ -71,7 +85,25 @@ function resetSolve() {
     resetTiles.forEach(t => {
         t.innerText = ''
         t.dataset.possibleNum = []
+        t.dataset.impossibleNum = []
     })
+}
+
+function changeDifficulty(difficulty) {
+    resetSolve()
+    tiles.forEach(t => {
+        t.innerText = ''
+        t.classList.remove('preset')
+    })
+    current.innerText = "Current difficulty: " + difficulty[0]
+    for (let i = 1; i < difficulty.length; i++) {
+        const n = difficulty[i];
+        n.location.forEach(l => {
+            let tile = document.getElementById(l)
+            tile.innerText = n.value
+            tile.classList.add('preset')
+        })
+    }
 }
 
 function updateEmptyTiles() {
