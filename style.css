@@ -1,10 +1,16 @@
 * {
     box-sizing: border-box;
+    /* border: 1px black solid; */
+
 }
 
 button {
     display: inline;
-    margin: 5vh auto;
+}
+
+a {
+    text-decoration: none;
+    color: black;
 }
 
 .board {
@@ -39,6 +45,22 @@ button {
 .options, #stages {
     display: flex;
     justify-content: space-around;
+    align-items: center;
+    margin: 5vh auto;
+}
+
+.top {
+    justify-content: space-between;
+    margin: 0;
+}
+
+.custom-button {
+    position: absolute;
+    left: 50%;
+}
+.custom {
+    position: relative;
+    left: -50%;
 }
 
 .difficulty {
@@ -52,4 +74,9 @@ button {
 
 .difficulty:hover {
     background-color: rgb(24, 171, 171);
+}
+
+.swap {
+    aspect-ratio: 1;
+    margin: 0;
 }

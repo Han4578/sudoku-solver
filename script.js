@@ -1,14 +1,15 @@
-import {medium, hard, evil} from "./stages/index.js"
+import {stages} from "./stages/index.js"
 
 let board = document.querySelector('.board')
 let start = document.getElementById('start')
+let single = document.getElementById('single')
 let reset = document.getElementById('reset')
+let randomize = document.querySelector('.swap')
 let current = document.getElementById('current')
 let stageMenu = document.getElementById('stages')
 let tiles = []
 let bigTiles = []
-let stages = [medium, hard, evil]
-let preset = evil
+let preset = stages[2]
 
 for (let a = 1; a <= 9; a++) {
     let bigTile = document.createElement('div')
@@ -42,68 +43,80 @@ for (let a = 1; a <= 9; a++) {
     bigTiles.push(bigTile)
 }
 
-stages.forEach(s => {
+for (const s of stages) {
     let button = document.createElement('button')
     button.classList.add('difficulty')
     button.innerText = s[0]
-    button.addEventListener("click", () => {changeDifficulty(s)})
-    stageMenu.appendChild(button)
-})
-
-for (let i = 1; i < preset.length; i++) {
-    const n = preset[i];
-    n.location.forEach(l => {
-        let tile = document.getElementById(l)
-        tile.innerText = n.value
-        tile.classList.add('preset')
+    button.addEventListener("click", () => {
+        changeDifficulty(s)
     })
+    stageMenu.appendChild(button)
 }
+
+changeDifficulty(preset)
 //-----------------------------------------------------------------------------------------------------------
 
 let movesMade
 let emptyTiles
 start.addEventListener('click', startSolve)
+single.addEventListener('click', singleSolve)
 reset.addEventListener('click', resetSolve)
+randomize.addEventListener('click', randomizeMap)
 
 function startSolve() {
     movesMade = 1
     let count = 0
-    while (movesMade > 0) {
+    while (movesMade > 0 && count < 30) {
         movesMade = 0
         findNakedSingles()
         findHiddenSingles()
         findNakedPairs()
-        count++
+        findPointingPairs()
+        if (movesMade > 0) count++
     }
-    console.log(count);
+    console.log(count + ' moves');
+}
+function singleSolve() {
+    let count = 0
+    findNakedSingles()
+    findHiddenSingles()
+    findNakedPairs()
+    findPointingPairs()
+    count++
+    console.log(count + ' moves');
 }
 
 function resetSolve() {
     let resetTiles = tiles.filter(t => {
         return !t.classList.contains('preset')
     })
-    resetTiles.forEach(t => {
+    for (const t of resetTiles) {
         t.innerText = ''
         t.dataset.possibleNum = []
         t.dataset.impossibleNum = []
-    })
+    }
 }
 
 function changeDifficulty(difficulty) {
     resetSolve()
-    tiles.forEach(t => {
+    for (const t of tiles) {
         t.innerText = ''
         t.classList.remove('preset')
-    })
+    }
     current.innerText = "Current difficulty: " + difficulty[0]
     for (let i = 1; i < difficulty.length; i++) {
         const n = difficulty[i];
-        n.location.forEach(l => {
+        for (const l of n.location) {
             let tile = document.getElementById(l)
             tile.innerText = n.value
             tile.classList.add('preset')
-        })
+        }
     }
+}
+
+function randomizeMap() {
+    let index = Math.floor(Math.random() * stages.length)
+    changeDifficulty(stages[index])
 }
 
 function updateEmptyTiles() {
@@ -113,12 +126,51 @@ function updateEmptyTiles() {
     checkForPossibleNumbers()
 }
 
-function checkForPossibleNumbers() {
+function countNumbers(arr) {
+    let pNum = arr.map(t => {
+        return t.dataset.possibleNum
+    })
+    let count = {}
+    for (const n of pNum) {
+        let array = [...n]
+        for (const num of array) {
+            count[num] = (count[num] || 0) + 1 //if number doesn't exist in object, count = 1, else count +=1
+        }
+    }
+    return count
+}
 
-    emptyTiles.forEach(et => { // repeat for every tile
-        let adjacentTiles = tiles.filter(t => { //get all the tiles that are horizontal/vertical/same big square to the empty tile and not empty
-            return ((t.id[1] == et.id[1]) || (t.id[0] == et.id[0]) || (t.parentElement.id == et.parentElement.id)) && (t.id !== et.id) && t.innerText !== ''
-        })
+function groupRemove(group, exceptions, num) {
+    let a = exceptions[0]
+    let b = exceptions[1]
+    let emptyTiles = tiles.filter(t => {
+        return t.innerText == '' && t !== a && t !== b && t.id.includes(group)
+    })
+    for (const t of emptyTiles) {
+        let possibleNum = [...t.dataset.possibleNum]
+        let impossibleNum = [...t.dataset.impossibleNum]
+        if (possibleNum.includes(num)) {
+            possibleNum.pop(num)
+            movesMade++
+        }
+        if (!impossibleNum.includes(num)) {
+            impossibleNum.push(num)
+            movesMade++
+        }
+
+        t.dataset.possibleNum = possibleNum.join('')
+        t.dataset.impossibleNum = impossibleNum.join('')
+    }
+
+}
+
+function checkForPossibleNumbers() {
+    for (const et of emptyTiles) { // repeat for every tile
+        let adjacentTiles = tiles.filter(
+            t => { //get all the tiles that are horizontal/vertical/same big square to the empty tile and not empty
+                return ((t.id[1] == et.id[1]) || (t.id[0] == et.id[0]) || (t.parentElement.id == et
+                    .parentElement.id)) && (t.id !== et.id) && t.innerText !== ''
+            })
         let numbers = [...new Set(adjacentTiles.map(t => {
             return t.innerText
         }))] // get their innertext 
@@ -127,8 +179,8 @@ function checkForPossibleNumbers() {
         let possibleNum = original.filter(n => { // get all numbers that are not in numbers array
             return !numbers.includes(n.toString()) && ![...et.dataset.impossibleNum].includes(n.toString())
         })
-        et.dataset.possibleNum = possibleNum // add to tile dataset
-    })
+        et.dataset.possibleNum = possibleNum.join('') // add to tile dataset
+    }
 }
 
 function findNakedSingles() { //find tiles with only one possibility
@@ -137,43 +189,31 @@ function findNakedSingles() { //find tiles with only one possibility
         return t.dataset.possibleNum.length == 1
     })
     if (singleTiles.length > 0) {
-        singleTiles.forEach(t => {
+        for (const t of singleTiles) {
             t.innerText = t.dataset.possibleNum;
             movesMade++
-        })
+        }
     }
 }
 
 function findHiddenSingles() { //find tiles where the unplaced number in the bigtile has only one possibility
     updateEmptyTiles()
-    bigTiles.forEach(bt => {
-        let allValues = []
+    for (const bt of bigTiles) {
         let empty = emptyTiles.filter(t => {
             return t.parentElement == bt
         })
-        empty.forEach(t => {
-            let num = [...t.dataset.possibleNum]
-            num.forEach(n => {
-                if (!isNaN(n)) {
-                    allValues.push(n)
-                }
-            })
-        })
-        let count = {}
-        allValues.forEach(n => {
-            count[n] = (count[n] || 0) + 1 //if number doesn't exist in object, count = 1, else count +=1
-        })
+        let count = countNumbers(empty)
         for (const key in count) {
             if (count[key] == 1) {
-                empty.forEach(t => {
+                for (const t of empty) {
                     if (t.dataset.possibleNum.includes(key)) {
                         t.innerText = key
                         movesMade++
                     }
-                });
+                }
             }
         }
-    })
+    }
 }
 
 function findNakedPairs() {
@@ -189,37 +229,25 @@ function findNakedPairs() {
             return t.parentElement == bigTiles[i]
         })
         const directions = [row, column, bigTile]
-        directions.forEach(d => {
-            let possiblePairs = d.filter(t => {
-                return t.dataset.possibleNum.length == 3
+        for (const d of directions) {
+            let possiblePairs = d.filter(t => { // find all tiles with 2 possible num
+                return t.dataset.possibleNum.length == 2 
             })
-            let possiblePairsNum = possiblePairs.map(t => {
+            let possiblePairsNum = possiblePairs.map(t => { // get their num
                 return t.dataset.possibleNum
             })
-            let pairs = possiblePairsNum.filter((t, i) => {
+            let pairs = possiblePairsNum.filter((t, i) => { // find pairs among tiles
                 return possiblePairsNum.indexOf(t) !== i
-            }) //find dupe pairs
-            pairs.forEach(pair => {
+            })
+            for (const pair of pairs) {
                 let notPair = d.filter(t => {
                     return t.dataset.possibleNum !== pair
                 });
-                
-                [pair[0], pair[2]].forEach(p => {
+
+                for (const p of [pair[0], pair[1]]) {
                     for (const t of notPair) {
-                        let possibleNum = []
-                        let impossibleNum = []
-                        let pNum = [...t.dataset.possibleNum]
-                        pNum.forEach(n => {
-                            if (!isNaN(n)) {
-                                possibleNum.push(n)
-                            }
-                        })
-                        let ipNum = [...t.dataset.impossibleNum]
-                        ipNum.forEach(n => {
-                            if (!isNaN(n)) {
-                                impossibleNum.push(n)
-                            }
-                        })
+                        let possibleNum = [...t.dataset.possibleNum]
+                        let impossibleNum = [...t.dataset.impossibleNum]
                         if (possibleNum.includes(p)) {
                             possibleNum.pop(p)
                             movesMade++
@@ -228,15 +256,45 @@ function findNakedPairs() {
                             impossibleNum.push(p)
                             movesMade++
                         }
-                        t.dataset.possibleNum = possibleNum
-                        t.dataset.impossibleNum = impossibleNum
-                    }
-                })
-            })
 
-        })
+                        t.dataset.possibleNum = possibleNum.join('')
+                        t.dataset.impossibleNum = impossibleNum.join('')
+                    }
+                }
+                updateEmptyTiles()
+            }
+
+        }
     }
-    for (let i = 1; i <= 9; i++) {
+
+}
+
+function findPointingPairs() {
+    updateEmptyTiles()
+    for (const bt of bigTiles) {
+        let emptyTiles = tiles.filter(t => {
+            return t.innerText == '' && t.parentElement == bt
+        })
+        let count = countNumbers(emptyTiles)
+        if (count.length == 0) return
+        for (const key in count) {
+            if (count[key] == 2) {
+                let pairs = emptyTiles.filter(t => {
+                    return t.dataset.possibleNum.includes(key)
+                })
+                let a = pairs[0]
+                let b = pairs[1]
+                if (a.id[0] == b.id[0]) {
+                    groupRemove(a.id[0], [a, b], key)
+                    movesMade++
+                }
+                if (a.id[1] == b.id[1]) {
+                    groupRemove(a.id[1], [a, b], key)
+                    movesMade++
+                }
+            }
+            updateEmptyTiles()
+        }
 
     }
 }

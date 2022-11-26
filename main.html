@@ -4,15 +4,27 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Sudoku solver</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" type="module" defer></script>
+    <script src="https://kit.fontawesome.com/7574a036fb.js" crossorigin="anonymous"></script>
+
 </head>
 <body>
-    <div id="current">Current difficulty: Evil</div>
+    <div class="options top">
+        <span id="current">Current Difficulty: Evil</span>
+        <span class="">
+            <span id="random">Randomize Map</span>
+            <button class="swap"><i class="fa-solid fa-rotate"></i></button>
+        </span>
+        <div class="custom-button">
+            <button class="custom"><a href="./custom.html">Custom Map</a></button>
+        </div>
+    </div>
     <div class="board"></div>
     <div class="options">
         <button id="start"> start</button>
+        <button id="single"> run once</button>
         <button id="reset"> reset</button>
     </div>
     <div id="stages"></div>
