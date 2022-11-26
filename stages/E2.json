@@ -1,0 +1,39 @@
+[
+    "Evil",
+    {
+        "location": ["a1", "f2", "c6", "b9"],
+        "value": 1
+    },
+    {
+        "location": ["b2", "g6", "i7"],
+        "value": 2
+    },
+    {
+        "location": ["e1", "f4", "a7"],
+        "value": 3
+    },
+    {
+        "location": ["b3", "c5"],
+        "value": 4
+    },
+    {
+        "location": ["d1", "c4", "f7"],
+        "value": 5
+    },
+    {
+        "location": ["g1", "d8"],
+        "value": 6
+    },
+    {
+        "location": ["h8"],
+        "value": 7
+    },
+    {
+        "location": ["c1", "i3", "a4"],
+        "value": 8
+    },
+    {
+        "location": ["e6", "i4", "c7"],
+        "value": 9
+    }
+]
