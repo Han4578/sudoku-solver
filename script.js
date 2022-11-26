@@ -6,11 +6,17 @@ let single = document.getElementById('single')
 let reset = document.getElementById('reset')
 let randomize = document.querySelector('.swap')
 let current = document.getElementById('current')
-let stageMenu = document.getElementById('stages')
+let difficultyButtons = document.querySelectorAll('.difficulty')
+let difficulty = 'Evil'
 let tiles = []
 let bigTiles = []
-let preset = stages[2]
+let maps = []
+let count = 0
 
+
+for (const difficulty of stages) {
+    maps = maps.concat(difficulty)
+}
 for (let a = 1; a <= 9; a++) {
     let bigTile = document.createElement('div')
     bigTile.classList.add('tile')
@@ -42,18 +48,24 @@ for (let a = 1; a <= 9; a++) {
     board.appendChild(bigTile)
     bigTiles.push(bigTile)
 }
-
-for (const s of stages) {
-    let button = document.createElement('button')
-    button.classList.add('difficulty')
-    button.innerText = s[0]
-    button.addEventListener("click", () => {
-        changeDifficulty(s)
+for (const d of difficultyButtons) {
+    d.addEventListener('click', e => {
+        changeDifficulty(e.target)
     })
-    stageMenu.appendChild(button)
 }
 
-changeDifficulty(preset)
+randomizeMap(difficulty)
+
+// for (const s of maps) {
+//     let button = document.createElement('button')
+//     button.classList.add('difficulty')
+//     button.innerText = s[0]
+//     button.addEventListener("click", () => {
+//         changeDifficulty(s)
+//     })
+//     stageMenu.appendChild(button)
+// }
+
 //-----------------------------------------------------------------------------------------------------------
 
 let movesMade
@@ -65,7 +77,6 @@ randomize.addEventListener('click', randomizeMap)
 
 function startSolve() {
     movesMade = 1
-    let count = 0
     while (movesMade > 0 && count < 30) {
         movesMade = 0
         findNakedSingles()
@@ -77,16 +88,16 @@ function startSolve() {
     console.log(count + ' moves');
 }
 function singleSolve() {
-    let count = 0
     findNakedSingles()
     findHiddenSingles()
     findNakedPairs()
     findPointingPairs()
     count++
-    console.log(count + ' moves');
+    console.log('move ' + count);
 }
 
 function resetSolve() {
+    count = 0
     let resetTiles = tiles.filter(t => {
         return !t.classList.contains('preset')
     })
@@ -97,26 +108,31 @@ function resetSolve() {
     }
 }
 
-function changeDifficulty(difficulty) {
+function changeDifficulty(d) {
+    difficulty = d.innerText
+    randomizeMap()
+}
+
+function randomizeMap() {
+    let mapList = maps.filter(m => {
+        return m[0] == difficulty
+    })
+    let index = Math.floor(Math.random() * mapList.length)
+    let newMap = mapList[index]
     resetSolve()
     for (const t of tiles) {
         t.innerText = ''
         t.classList.remove('preset')
     }
-    current.innerText = "Current difficulty: " + difficulty[0]
-    for (let i = 1; i < difficulty.length; i++) {
-        const n = difficulty[i];
+    for (let i = 1; i < newMap.length; i++) {
+        const n = newMap[i];
         for (const l of n.location) {
             let tile = document.getElementById(l)
             tile.innerText = n.value
             tile.classList.add('preset')
         }
     }
-}
-
-function randomizeMap() {
-    let index = Math.floor(Math.random() * stages.length)
-    changeDifficulty(stages[index])
+    current.innerText = "Current difficulty: " + newMap[0]
 }
 
 function updateEmptyTiles() {
