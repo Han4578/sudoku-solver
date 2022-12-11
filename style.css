@@ -1,8 +1,9 @@
 * {
     box-sizing: border-box;
-    /* border: 1px black solid; */
+    font-size:medium;
 
 }
+
 
 button {
     display: inline;
@@ -15,8 +16,10 @@ a {
 
 .board {
     display: flex;
-    width: 30%;
     aspect-ratio: 1 / 1;
+    /* width: 45%; */
+    height: 50vh;
+    /* min-width: 400px; */
     margin: 5vh auto;
     flex-wrap: wrap;
     row-gap: 0;
@@ -30,12 +33,14 @@ a {
     width: calc(100% / 3);
     justify-content: center;
     align-items: center;
-    font-size: 2vw;
+    font-size: 3vh;
     color: blue;
 }
 
 .big {
     flex-wrap: wrap;
+    justify-content: stretch;
+    aspect-ratio: 1 / 1;
 }
 
 .preset {
@@ -52,21 +57,31 @@ a {
 .top {
     justify-content: space-between;
     margin: 0;
-}
+} 
 
 .custom-button {
     position: absolute;
     left: 50%;
 }
+
 .custom {
+    display: flex;
+    justify-content: space-between;
+    object-fit: none;
     position: relative;
     left: -50%;
+}
+
+.custom > button {
+    height: 100%;
+    margin: 5px;
 }
 
 .difficulty {
     aspect-ratio: 2 / 1;
     padding: 0.5vw;
     width: 10vw;
+    min-width: 80px;
     border-radius: 10%;
     border: 1px solid black;
     background-color: rgb(131, 250, 250);
@@ -79,4 +94,37 @@ a {
 .swap {
     aspect-ratio: 1;
     margin: 0;
+}
+
+@media (orientation: portrait) and (max-width: 750px) {
+    * {
+        margin: 0;
+        font-size: 4vw;
+    }
+
+    a {
+        font-size: 3vw;
+    }
+
+    .custom-button {
+        top: 4%;
+    }
+
+    .board {
+        height: calc(100vw * 0.75);
+        margin: 5vh auto;
+    }
+
+    .difficulty {
+        width: 20vw;
+        min-width: 0px;
+    }
+
+    .tile {
+        font-size: large;
+    }
+
+    .difficulty {
+        font-size: 80%;
+    }
 }

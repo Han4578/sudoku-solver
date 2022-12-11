@@ -1,17 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sudoku solver</title>
+    <script src="manual.js" type="module" defer></script>
     <link rel="stylesheet" href="style.css">
-    <script src="script.js" type="module" defer></script>
-    <script src="https://kit.fontawesome.com/7574a036fb.js" crossorigin="anonymous"></script>
-
+    <title>Document</title>
 </head>
-
 <body>
     <div class="options top">
         <span id="current">Current Difficulty: Evil</span>
@@ -20,19 +16,12 @@
             <button class="swap"><i class="fa-solid fa-rotate"></i></button>
         </span>
         <div class="custom-button">
-            <div class="custom">
-                <button><a href="./custom.html">Custom Map</a></button>
-            <button><a href="./manual.html">Try it Yourself</a></button>
-            </div>
+            <button class="custom"><a href="./custom.html">Back</a></button>
         </div>
-
-    </div>
     </div>
     <div class="board"></div>
     <div class="bottom">
         <div class="options">
-            <button id="start"> start</button>
-            <button id="single"> run once</button>
             <button id="reset"> reset</button>
         </div>
         <div id="stages">
@@ -43,5 +32,4 @@
         </div>
     </div>
 </body>
-
 </html>
