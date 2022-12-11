@@ -1,0 +1,39 @@
+[
+    "Hard",
+    {
+        "location": ["f3", "g4"],
+        "value": 1
+    },
+    {
+        "location": ["e1", "f6", "g5"],
+        "value": 2
+    },
+    {
+        "location": ["d1", "b5"],
+        "value": 3
+    },
+    {
+        "location": ["a3", "f2", "b4", "d8"],
+        "value": 4
+    },
+    {
+        "location": ["b2", "h1", "e6", "f8"],
+        "value": 5
+    },
+    {
+        "location": ["c1", "d4"],
+        "value": 6
+    },
+    {
+        "location": ["g3", "b8"],
+        "value": 7
+    },
+    {
+        "location": ["a5", "h7"],
+        "value": 8
+    },
+    {
+        "location": ["h2", "i7"],
+        "value": 9
+    }
+]

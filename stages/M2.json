@@ -1,0 +1,39 @@
+[
+    "Medium",
+    {
+        "location": ["d3", "i6", "c8"],
+        "value": 1
+    }, 
+    {
+        "location": ["c6", "e5", "f9"],
+        "value": 2
+    }, 
+    {
+        "location": ["i1", "b6", "g5", "d8"],
+        "value": 3
+    }, 
+    {
+        "location": ["a2", "f3", "h1", "g9"],
+        "value": 4
+    }, 
+    {
+        "location": ["c2", "a7"],
+        "value": 5
+    }, 
+    {
+        "location": ["b3", "f1", "i2", "g6", "a8", "h9"],
+        "value": 6
+    }, 
+    {
+        "location": ["b9"],
+        "value": 7
+    }, 
+    {
+        "location": ["a6", "d5", "g4", "c9", "f7", "i8"],
+        "value": 8
+    }, 
+    {
+        "location": ["a3", "g2", "h6"],
+        "value": 9
+    }
+]
