@@ -1,11 +1,18 @@
-import {Sudoku} from "./methods.js"
+import { Sudoku } from "./methods.js";
+import {stages} from "./stages/index.js"
+
 
 let board = document.querySelector('.board')
-let start = document.getElementById('start')
 let reset = document.getElementById('reset')
-let printer = document.getElementById('print')
+let difficulty = 'Evil'
+let currentMap = []
 let tiles = []
 let bigTiles = []
+let maps = []
+
+for (const difficulty of stages) {
+    maps = maps.concat(difficulty)
+}
 
 for (let a = 1; a <= 9; a++) {
     let bigTile = document.createElement('div')
@@ -42,36 +49,4 @@ for (let a = 1; a <= 9; a++) {
     bigTiles.push(bigTile)
 }
 
-function checkNum(tile) {
-    let value = tile.value
-    if (value > 9) value = value[1] 
-    if (value == 0) value = '' 
-    if (value < 0) value = 9 
-    tile.value = value
-}
-
-const sudoku = new Sudoku(tiles, undefined, bigTiles, undefined, undefined, 'value')
-sudoku.resetSolve()
-
-start.addEventListener('click', () => {sudoku.startSolve()})
-printer.addEventListener('click', printMap)
-reset.addEventListener('click', () => {sudoku.resetSolve()})
-
-function printMap() {
-    let numTiles = tiles.filter(t => {return t.value !== ''})
-    let result = []
-    for (let i = 1; i <= 9; i++) {
-        let correspondingTiles = numTiles.filter(t => {
-            return t.value == i
-        })
-        let ids = correspondingTiles.map(t => {
-            return t.id
-        })
-        let object = {
-            "location": ids,
-            "value": i
-        }
-        result.push(object)
-    }
-    console.log(JSON.stringify(result));
-}
+let sudoku = new Sudoku(tiles, maps, bigTiles, difficulty, currentMap, 'dataset')
