@@ -1,5 +1,6 @@
 [
     "Medium",
+    2,
     {
         "location": ["d3", "i6", "c8"],
         "value": 1

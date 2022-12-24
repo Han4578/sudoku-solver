@@ -1,5 +1,6 @@
 [
     "Hard",
+    2,
     {
         "location": ["f3", "g4"],
         "value": 1

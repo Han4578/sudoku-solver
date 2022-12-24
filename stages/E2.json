@@ -1,5 +1,6 @@
 [
     "Evil",
+    2,
     {
         "location": ["a1", "f2", "c6", "b9"],
         "value": 1
