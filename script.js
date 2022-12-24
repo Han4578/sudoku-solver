@@ -49,7 +49,7 @@ for (let a = 1; a <= 9; a++) {
     bigTiles.push(bigTile)
 }
 
-const sudoku = new Sudoku(tiles, maps, bigTiles, difficulty, currentMap, 'innerText')
+const sudoku = new Sudoku(tiles, maps, bigTiles, difficulty, currentMap, 'innerText', '')
 
 for (const d of difficultyButtons) {
     d.addEventListener('click', e => {

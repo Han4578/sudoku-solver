@@ -14,13 +14,15 @@ a {
     color: black;
 }
 
+label {
+    font-family: sans-serif;
+}
+
 .board {
     display: flex;
     aspect-ratio: 1 / 1;
-    /* width: 45%; */
     height: 50vh;
-    /* min-width: 400px; */
-    margin: 5vh auto;
+    margin: 0 auto;
     flex-wrap: wrap;
     row-gap: 0;
     column-gap: 0;
@@ -57,7 +59,15 @@ a {
 .top {
     justify-content: space-between;
     margin: 0;
-} 
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    margin: 3vh auto;
+    height: 2vh;
+    aspect-ratio: 25 / 1;
+}
 
 .custom-button {
     position: absolute;
@@ -113,6 +123,11 @@ a {
     .board {
         height: calc(100vw * 0.75);
         margin: 5vh auto;
+    }
+
+    .info {
+        height: auto;
+        width: 75vw;
     }
 
     .difficulty {
