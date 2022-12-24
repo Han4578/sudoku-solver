@@ -1,12 +1,13 @@
 export class Sudoku {
-    constructor(tiles, maps, bigTiles, difficulty, currentMap, type) {
+
+    constructor(tiles, maps, bigTiles, difficulty, currentMap, type, timer) {
         this.tiles = tiles
         this.maps = maps
         this.bigTiles = bigTiles
         this.difficulty = difficulty
         this.currentMap = currentMap
         this.type = type
-
+        this.timer = timer
     }
 
     startSolve() {
@@ -27,7 +28,7 @@ export class Sudoku {
             if (this.movesMade > 0) this.count++
         } while (this.movesMade > 0 && this.count < 30)
 
-        console.log(this.count + ((this.count == 1) ? ' move' : ' moves'));
+        if(this.type !== 'dataset') console.log(this.count + ((this.count == 1) ? ' move' : ' moves'));
     }
 
 
@@ -66,13 +67,12 @@ export class Sudoku {
         }
     }
 
-    changeDifficulty(d) {
+    changeDifficulty(d, current, stageNumber) {
         this.difficulty = d.innerText
-        let newMap = this.randomizeMap()
-        return newMap
+        this.randomizeMap(stageNumber, current)
     }
 
-    randomizeMap() {
+    randomizeMap(stageNumber, current) {
         let newMap = []
         let mapList = this.maps.filter(m => {
             return m[0] == this.difficulty && m !== this.currentMap
@@ -81,20 +81,49 @@ export class Sudoku {
         newMap = mapList[index]
         this.currentMap = newMap
         this.resetSolve()
+        Timer.reset(this.timer)
         for (const t of this.tiles) {
-            (this.type == 'innerText')? t.innerText =  '': t.value = ''
+            switch (this.type) {
+                case 'innerText':
+                    t.innerText = ''
+                    break;
+                case 'value':
+                    t.value = ''
+                    break;
+                case 'dataset':
+                    t.value = ''
+                    t.dataset.ans = ''
+                    t.readOnly = false
+                    break;
+                default:
+                    break;
+            }
             t.classList.remove('preset')
         }
-        for (let i = 1; i < newMap.length; i++) {
-            const n = newMap[i];
+        for (let i = 2; i < newMap.length; i++) {
+            const n = newMap[i]
             for (const l of n.location) {
                 let tile = document.getElementById(l)
-                tile.value = n.value
-                tile.innerHTML = n.value
+                switch (this.type) {
+                    case 'innerText':
+                        tile.innerText = n.value
+                        break;
+                    case 'value':
+                        tile.value = n.value
+                        break;
+                    case 'dataset':
+                        tile.value = n.value
+                        tile.dataset.ans = n.value
+                        tile.readOnly = true
+                        break;
+                    default:
+                        break;
+                }
                 tile.classList.add('preset')
             }
         }
-        return newMap
+        current.innerText = "Current difficulty: " + newMap[0]
+        stageNumber.innerText = newMap[1]
     }
 
     updateEmptyTiles() {
@@ -116,6 +145,27 @@ export class Sudoku {
             }
         }
         return count
+    }
+
+    checkNum(tile, allowCheckErrors) {
+        let value = tile.value
+        if (value > 9) value = value[1] 
+        if (value == 0) value = '' 
+        if (value < 0) value = 9 
+        tile.value = value
+        if (!allowCheckErrors) {
+            tile.style.color = 'blue'
+            return
+        }
+        let adjacentTiles = this.tiles.filter(t => {return t.value !== '' && (tile.id[0] == t.id[0] || tile.id[1] == t.id[1] || tile.parentElement == t.parentElement) && tile !== t})
+        let impossibleNum = [...new Set(adjacentTiles.map(t => {return t.value}))]
+        tile.style.color = (impossibleNum.includes(value))? 'red' : 'blue';
+    }
+
+    changeFocus(value) {
+        for (const t of this.tiles) {
+            t.style.backgroundColor = (t.value == value && value !== '')? 'lightgrey': 'transparent';
+        }
     }
 
     groupRemove(group, exceptions, num) {
@@ -319,3 +369,41 @@ export class Sudoku {
         return condition
     }
 }
+
+export let Timer = {
+    isRunning: false,
+    ID: '',
+    start(timer) {
+        if(!this.isRunning) {
+            this.isRunning = true
+            let time = timer.innerText.split(':')
+            let minutes = parseInt(time[0])
+            let seconds = parseInt(time[1])
+            this.ID = setInterval(() => {
+                seconds++
+                if (seconds == 60) {
+                    seconds = 0
+                    minutes++
+                }
+                let displayedSeconds = seconds
+                if (seconds < 10) displayedSeconds = '0' + displayedSeconds.toString()
+                timer.innerText = minutes + ':' + displayedSeconds
+            }, 1000)
+        }
+    },
+    stop() {
+        clearInterval(this.ID)
+        this.isRunning = false
+    },
+    reset(timer) {
+        if(timer == '') return
+        timer.innerText = '0:00'
+        this.isRunning = false
+        clearInterval(this.ID)
+    },
+    display(timer, display) {
+        timer.style.display = (display)? 'inline' : 'none'
+    }
+
+}    
+

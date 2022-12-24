@@ -6,22 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="manual.js" type="module" defer></script>
     <link rel="stylesheet" href="style.css">
-    <title>Document</title>
+    <script src="https://kit.fontawesome.com/7574a036fb.js" crossorigin="anonymous"></script>
+    <title>Manual Solve</title>
 </head>
 <body>
     <div class="options top">
-        <span id="current">Current Difficulty: Evil</span>
+        <span id="current"></span>
         <span class="">
             <span id="random">Randomize Map</span>
             <button class="swap"><i class="fa-solid fa-rotate"></i></button>
         </span>
         <div class="custom-button">
-            <button class="custom"><a href="./custom.html">Back</a></button>
+            <button class="custom"><a href="./main.html">Back</a></button>
         </div>
+    </div>
+    <div class="info">
+        <span id="number"></span>
+        <span id="timer">0:00</span>
     </div>
     <div class="board"></div>
     <div class="bottom">
         <div class="options">
+            <button id="start"> show answers</button>
+            <label for="error"><input type="checkbox" id="error" checked>check for mistakes</label>
+            <label for="timerCheckbox"><input type="checkbox" id="timerCheckbox" checked>Timer</label>
             <button id="reset"> reset</button>
         </div>
         <div id="stages">
