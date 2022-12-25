@@ -10,11 +10,13 @@ let current = document.getElementById('current')
 let reset = document.getElementById('reset')
 let start = document.getElementById('start')
 let error = document.getElementById('error')
+let win = document.getElementById('win')
 let timerCheckbox = document.getElementById('timerCheckbox')
 let difficultyButtons = document.querySelectorAll('.difficulty')
 let difficulty = 'Evil'
 let allowCheckErrors = true
 let allowStartTimer = true
+let isShownAns = false
 let currentMap = []
 let tiles = []
 let bigTiles = []
@@ -60,25 +62,32 @@ for (const t of tiles) {
     t.addEventListener('input', e => {
     sudoku.checkNum(e.target, allowCheckErrors)
     Timer.start(timer)
-    })
-    t.addEventListener('click', e => {
-    sudoku.changeFocus(e.target.value);
+    checkforWin()
     })
 }
 
 for (const d of difficultyButtons) {
     d.addEventListener('click', e => {
+        isShownAns = false
         sudoku.changeDifficulty(e.target, current, stageNumber)
     })
 }
-reset.addEventListener('click', () => {sudoku.resetSolve()})
-randomize.addEventListener('click', () => {sudoku.randomizeMap(stageNumber, current)})
+
+document.addEventListener('click', e => {
+sudoku.changeFocus(e.target);
+})
+reset.addEventListener('click', () => {
+    isShownAns = false
+    sudoku.resetSolve()
+})
+randomize.addEventListener('click', () => {
+    isShownAns = false
+    sudoku.randomizeMap(stageNumber, current)
+})
 start.addEventListener('click', () => {
-    sudoku.startSolve()
-    Timer.stop()
-    for (const t of tiles) {
-        
-    }
+    sudoku.startSolve();
+    Timer.stop();
+    (isShownAns)? hideAns() : revealAns();
 })
 
 error.addEventListener('click', () => {
@@ -94,3 +103,38 @@ timerCheckbox.addEventListener('click', () => {
 
 sudoku.randomizeMap(stageNumber, current)
 
+function revealAns() {
+    isShownAns = true
+    for (const t of tiles) {
+        t.dataset.userAns = t.value
+        t.value = t.dataset.ans
+        t.style.color = 'blue'
+    }
+}
+
+function hideAns() {
+    isShownAns = false
+    for (const t of tiles) {
+        t.value = t.dataset.userAns
+        sudoku.checkNum(t, allowCheckErrors)
+    }
+}
+
+function checkforWin() {
+    if (isShownAns) return
+
+    let isWin = true
+    for (const t of tiles) {
+        if (t.value == '' || t.dataset.error == 'true') isWin = false
+    }
+    
+    if (!isWin) return
+    
+    Timer.stop()
+    win.innerText = "You Win!"
+    
+    for (const t of tiles) {
+        t.readOnly = true
+    }
+    
+}

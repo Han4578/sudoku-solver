@@ -153,16 +153,15 @@ export class Sudoku {
         if (value == 0) value = '' 
         if (value < 0) value = 9 
         tile.value = value
-        if (!allowCheckErrors) {
-            tile.style.color = 'blue'
-            return
-        }
+
         let adjacentTiles = this.tiles.filter(t => {return t.value !== '' && (tile.id[0] == t.id[0] || tile.id[1] == t.id[1] || tile.parentElement == t.parentElement) && tile !== t})
         let impossibleNum = [...new Set(adjacentTiles.map(t => {return t.value}))]
-        tile.style.color = (impossibleNum.includes(value))? 'red' : 'blue';
+        tile.style.color = (impossibleNum.includes(value) && allowCheckErrors)? 'red' : 'blue';
+        tile.dataset.error = (impossibleNum.includes(value))? true : false;
     }
 
-    changeFocus(value) {
+    changeFocus(tile) {
+        let value = tile.value
         for (const t of this.tiles) {
             t.style.backgroundColor = (t.value == value && value !== '')? 'lightgrey': 'transparent';
         }
