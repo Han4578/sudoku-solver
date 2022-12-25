@@ -62,6 +62,7 @@ export class Sudoku {
                 default:
                     break;
             }
+            t.readOnly = false
             t.dataset.possibleNum = []
             t.dataset.impossibleNum = []
         }

@@ -11,12 +11,14 @@ let reset = document.getElementById('reset')
 let start = document.getElementById('start')
 let error = document.getElementById('error')
 let win = document.getElementById('win')
+let notes = document.getElementById('notes')
 let timerCheckbox = document.getElementById('timerCheckbox')
 let difficultyButtons = document.querySelectorAll('.difficulty')
 let difficulty = 'Evil'
 let allowCheckErrors = true
 let allowStartTimer = true
 let isShownAns = false
+let isTakingNotes = false
 let currentMap = []
 let tiles = []
 let bigTiles = []
@@ -42,11 +44,12 @@ for (let a = 1; a <= 9; a++) {
 
     for (let b = 1; b <= 3; b++) {
         for (let c = 1; c <= 3; c++) {
-            let smallTile = document.createElement('input')
-            smallTile.type = 'number'
+            let smallTile = document.createElement('div')
+            // smallTile.type = 'text'
             smallTile.id = String.fromCharCode(96 + c + letter) + (b + e)
             smallTile.classList.add('tile')
             smallTile.classList.add('small')
+            smallTile.dataset.userAns = ''
             tiles.push(smallTile)
             bigTile.appendChild(smallTile)
 
@@ -60,45 +63,65 @@ let sudoku = new Sudoku(tiles, maps, bigTiles, difficulty, currentMap, 'dataset'
 
 for (const t of tiles) {
     t.addEventListener('input', e => {
-    sudoku.checkNum(e.target, allowCheckErrors)
-    Timer.start(timer)
-    checkforWin()
+        Timer.start(timer)
+        if (isNaN(e.target.value)) {
+            e.target.value = e.target.value.slice(0, - 1); 
+            return
+        }
+        if (isTakingNotes) {
+            takeNote(e.target)
+            return
+        }
+        sudoku.checkNum(e.target, allowCheckErrors)
+        checkforWin()
     })
 }
 
 for (const d of difficultyButtons) {
     d.addEventListener('click', e => {
-        isShownAns = false
+        hideAns()
+        win.innerText = ''
         sudoku.changeDifficulty(e.target, current, stageNumber)
     })
 }
 
 document.addEventListener('click', e => {
-sudoku.changeFocus(e.target);
+    sudoku.changeFocus(e.target);
 })
 reset.addEventListener('click', () => {
-    isShownAns = false
+    hideAns()
     sudoku.resetSolve()
+    win.innerText = ''
 })
 randomize.addEventListener('click', () => {
-    isShownAns = false
+    hideAns()
+    win.innerText = ''
     sudoku.randomizeMap(stageNumber, current)
 })
 start.addEventListener('click', () => {
     sudoku.startSolve();
     Timer.stop();
-    (isShownAns)? hideAns() : revealAns();
+    (isShownAns) ? hideAns(): revealAns();
 })
 
 error.addEventListener('click', () => {
-        allowCheckErrors = !allowCheckErrors
-        for (let t of tiles) {
-            sudoku.checkNum(t, allowCheckErrors)
-        }
+    allowCheckErrors = !allowCheckErrors
+    for (let t of tiles) {
+        sudoku.checkNum(t, allowCheckErrors)
+    }
 })
+
 timerCheckbox.addEventListener('click', () => {
-        allowStartTimer = !allowStartTimer
-        Timer.display(timer, allowStartTimer)
+    allowStartTimer = !allowStartTimer
+    Timer.display(timer, allowStartTimer)
+})
+
+notes.addEventListener('click', () => {
+    isTakingNotes = !isTakingNotes
+    let filledTiles = tiles.filter(t => {return t.value !== '' && !t.classList.contains('preset')})
+    for (const t of filledTiles) {
+        t.readOnly = (isTakingNotes)? true : false;
+    }
 })
 
 sudoku.randomizeMap(stageNumber, current)
@@ -110,31 +133,38 @@ function revealAns() {
         t.value = t.dataset.ans
         t.style.color = 'blue'
     }
+    start.innerText = 'Hide Answers'
 }
 
 function hideAns() {
     isShownAns = false
-    for (const t of tiles) {
+    let filledTiles = tiles.filter(t => {return t.value !== '' && !t.classList.contains('preset')})
+    for (const t of filledTiles) {
         t.value = t.dataset.userAns
         sudoku.checkNum(t, allowCheckErrors)
     }
+    start.innerText = 'Show Answers'
 }
 
 function checkforWin() {
     if (isShownAns) return
 
     let isWin = true
-    for (const t of tiles) {
-        if (t.value == '' || t.dataset.error == 'true') isWin = false
-    }
+    for (const t of tiles) if (t.value == '' || t.dataset.error == 'true') isWin = false
     
     if (!isWin) return
-    
+
     Timer.stop()
     win.innerText = "You Win!"
-    
+
     for (const t of tiles) {
         t.readOnly = true
     }
-    
+}
+
+function takeNote(t) {
+    t.value = [...new Set(Array.from(t.value))].join('')
+    t.classList.add('note')
+
+
 }
