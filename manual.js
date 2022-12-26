@@ -141,7 +141,7 @@ function hideAns() {
     })
     for (const t of filledTiles) {
         t.innerText = t.dataset.userAns
-        sudoku.checkNum(t, allowCheckErrors)
+            checkNum(t, allowCheckErrors)
     }
     start.innerText = 'Show Answers'
 }
@@ -193,9 +193,10 @@ function inputValue(value) {
     if (focusedTile == '') return
     focusedTile = focusedTile[0]
 
-    if (value == 'Backspace') {
+    if (value == 'Backspace' || focusedTile.value == value) {
         focusedTile.innerText = ''
         focusedTile.value = ''
+        findSameValue(focusedTile)
         return
     }
 
@@ -212,7 +213,7 @@ function inputValue(value) {
     focusedTile.innerText = value
     focusedTile.value = value
     checkNum(focusedTile)
-    if (focusedTile.style.color == 'blue') removeNotes(focusedTile)
+    if (focusedTile.style.color == 'blue') {removeNotes(focusedTile)}
     findSameValue(focusedTile)
     checkforWin()
 }
@@ -241,7 +242,7 @@ function takeNote(tile, value) {
             } else if (t.innerText == value) {
                 t.innerText = ''
                 let index = noteValues.indexOf(value)
-                noteValues.pop(index)
+                noteValues.splice(index, 1)
             }
 
         }
@@ -251,9 +252,11 @@ function takeNote(tile, value) {
 }
 
 function removeNotes(tile) {
-    let value = tile.innerText
+    let value = tile.value
     let adjacentTiles = tiles.filter(t => {return t.dataset.note.includes(value) && (t.id[0] == tile.id[0] || t.id[1] == tile.id[1])})
-    for (const t of adjacentTiles) takeNote(t, value)
+    for (const t of adjacentTiles) {
+        takeNote(t, value)
+    }
 }
 
 sudoku.randomizeMap(stageNumber, current)
