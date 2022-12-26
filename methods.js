@@ -58,6 +58,7 @@ export class Sudoku {
                     break;
                 case 'dataset':
                     t.dataset.ans = ''
+                    t.value = ''
                     break;
                 default:
                     break;
@@ -92,9 +93,8 @@ export class Sudoku {
                     t.value = ''
                     break;
                 case 'dataset':
-                    t.value = ''
+                    t.innerText = ''
                     t.dataset.ans = ''
-                    t.readOnly = false
                     break;
                 default:
                     break;
@@ -113,9 +113,7 @@ export class Sudoku {
                         tile.value = n.value
                         break;
                     case 'dataset':
-                        tile.value = n.value
-                        tile.dataset.ans = n.value
-                        tile.readOnly = true
+                        tile.innerText = tile.value = tile.dataset.ans = n.value
                         break;
                     default:
                         break;
@@ -146,26 +144,6 @@ export class Sudoku {
             }
         }
         return count
-    }
-
-    checkNum(tile, allowCheckErrors) {
-        let value = tile.value
-        if (value > 9) value = value[1] 
-        if (value == 0) value = '' 
-        if (value < 0) value = 9 
-        tile.value = value
-
-        let adjacentTiles = this.tiles.filter(t => {return t.value !== '' && (tile.id[0] == t.id[0] || tile.id[1] == t.id[1] || tile.parentElement == t.parentElement) && tile !== t})
-        let impossibleNum = [...new Set(adjacentTiles.map(t => {return t.value}))]
-        tile.style.color = (impossibleNum.includes(value) && allowCheckErrors)? 'red' : 'blue';
-        tile.dataset.error = (impossibleNum.includes(value))? true : false;
-    }
-
-    changeFocus(tile) {
-        let value = tile.value
-        for (const t of this.tiles) {
-            t.style.backgroundColor = (t.value == value && value !== '')? 'lightgrey': 'transparent';
-        }
     }
 
     groupRemove(group, exceptions, num) {

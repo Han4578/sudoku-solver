@@ -106,10 +106,21 @@ label {
     margin: 0;
 }
 
+.focus {
+    border: 2px blue solid;
+}
+
 .note {
-    font-size: 1.5vh;
+    font-size: 1.3vh;
     display: grid;
     grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+}
+
+.note > div {
+    font-size: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 @media (orientation: portrait) and (max-width: 750px) {
@@ -147,5 +158,9 @@ label {
 
     .difficulty {
         font-size: 80%;
+    }
+
+    .note > div {
+        font-size: 2vw;
     }
 }

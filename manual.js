@@ -50,6 +50,7 @@ for (let a = 1; a <= 9; a++) {
             smallTile.classList.add('tile')
             smallTile.classList.add('small')
             smallTile.dataset.userAns = ''
+            smallTile.dataset.note = ''
             tiles.push(smallTile)
             bigTile.appendChild(smallTile)
 
@@ -62,18 +63,8 @@ for (let a = 1; a <= 9; a++) {
 let sudoku = new Sudoku(tiles, maps, bigTiles, difficulty, currentMap, 'dataset', timer)
 
 for (const t of tiles) {
-    t.addEventListener('input', e => {
-        Timer.start(timer)
-        if (isNaN(e.target.value)) {
-            e.target.value = e.target.value.slice(0, - 1); 
-            return
-        }
-        if (isTakingNotes) {
-            takeNote(e.target)
-            return
-        }
-        sudoku.checkNum(e.target, allowCheckErrors)
-        checkforWin()
+    t.addEventListener('click', e => {
+        changeFocus(e.target)
     })
 }
 
@@ -86,18 +77,21 @@ for (const d of difficultyButtons) {
 }
 
 document.addEventListener('click', e => {
-    sudoku.changeFocus(e.target);
+    findSameValue(e.target);
 })
+
 reset.addEventListener('click', () => {
     hideAns()
     sudoku.resetSolve()
     win.innerText = ''
 })
+
 randomize.addEventListener('click', () => {
     hideAns()
     win.innerText = ''
     sudoku.randomizeMap(stageNumber, current)
 })
+
 start.addEventListener('click', () => {
     sudoku.startSolve();
     Timer.stop();
@@ -107,7 +101,7 @@ start.addEventListener('click', () => {
 error.addEventListener('click', () => {
     allowCheckErrors = !allowCheckErrors
     for (let t of tiles) {
-        sudoku.checkNum(t, allowCheckErrors)
+        checkNum(t, allowCheckErrors)
     }
 })
 
@@ -118,19 +112,23 @@ timerCheckbox.addEventListener('click', () => {
 
 notes.addEventListener('click', () => {
     isTakingNotes = !isTakingNotes
-    let filledTiles = tiles.filter(t => {return t.value !== '' && !t.classList.contains('preset')})
+    let filledTiles = tiles.filter(t => {
+        return t.value !== '' && !t.classList.contains('preset')
+    })
     for (const t of filledTiles) {
-        t.readOnly = (isTakingNotes)? true : false;
+        t.readOnly = (isTakingNotes) ? true : false;
     }
 })
 
-sudoku.randomizeMap(stageNumber, current)
+document.addEventListener("selectstart", e => e.preventDefault());
+
+document.onkeydown = e => inputValue(e.key)
 
 function revealAns() {
     isShownAns = true
     for (const t of tiles) {
-        t.dataset.userAns = t.value
-        t.value = t.dataset.ans
+        t.dataset.userAns = t.innerText
+        t.innerText = t.dataset.ans
         t.style.color = 'blue'
     }
     start.innerText = 'Hide Answers'
@@ -138,9 +136,11 @@ function revealAns() {
 
 function hideAns() {
     isShownAns = false
-    let filledTiles = tiles.filter(t => {return t.value !== '' && !t.classList.contains('preset')})
+    let filledTiles = tiles.filter(t => {
+        return t.innerText !== '' && !t.classList.contains('preset')
+    })
     for (const t of filledTiles) {
-        t.value = t.dataset.userAns
+        t.innerText = t.dataset.userAns
         sudoku.checkNum(t, allowCheckErrors)
     }
     start.innerText = 'Show Answers'
@@ -150,21 +150,110 @@ function checkforWin() {
     if (isShownAns) return
 
     let isWin = true
-    for (const t of tiles) if (t.value == '' || t.dataset.error == 'true') isWin = false
-    
+    for (const t of tiles)
+        if (t.innerText == '' || t.dataset.error == 'true') isWin = false
+
     if (!isWin) return
 
     Timer.stop()
     win.innerText = "You Win!"
 
+
+}
+
+function changeFocus(tile) {
     for (const t of tiles) {
-        t.readOnly = true
+        t.classList.remove('focus')
+    }
+    if (tile.classList.contains('preset')) return
+    tile.classList.add('focus')
+    
+}
+
+function checkNum(tile) {
+    let value = tile.innerText
+    let adjacentTiles = tiles.filter(t => {return t.innerText !== '' && (tile.id[0] == t.id[0] || tile.id[1] == t.id[1] || tile.parentElement == t.parentElement) && tile !== t})
+    let impossibleNum = [...new Set(adjacentTiles.map(t => {return t.value}))]
+    tile.style.color = (impossibleNum.includes(value) && allowCheckErrors)? 'red' : 'blue';
+    tile.dataset.error = (impossibleNum.includes(value))? true : false;
+}
+
+function findSameValue(tile) {
+    let value = tile.innerText
+
+    for (const t of tiles) {
+        t.style.backgroundColor = 'transparent';
+        t.style.backgroundColor = ((t.innerText == value || t.dataset.note.includes(value)) && value !== '' )? 'lightgrey': 'transparent';
     }
 }
 
-function takeNote(t) {
-    t.value = [...new Set(Array.from(t.value))].join('')
-    t.classList.add('note')
+function inputValue(value) {
+    if (value !== 'Backspace' && isNaN(value) || value == ' ' || value == 0) return
+    let focusedTile = tiles.filter(t => {return t.classList.contains('focus')})
+    if (focusedTile == '') return
+    focusedTile = focusedTile[0]
 
+    if (value == 'Backspace') {
+        focusedTile.innerText = ''
+        focusedTile.value = ''
+        return
+    }
 
+    Timer.start(timer)
+
+    if (isTakingNotes) {
+        takeNote(focusedTile, value)
+        return
+    }
+    if (focusedTile.children !== '') {
+        focusedTile.textContent = ''
+        focusedTile.classList.remove('note')
+    }
+    focusedTile.innerText = value
+    focusedTile.value = value
+    checkNum(focusedTile)
+    if (focusedTile.style.color == 'blue') removeNotes(focusedTile)
+    findSameValue(focusedTile)
+    checkforWin()
 }
+
+function takeNote(tile, value) {
+    if (tile.value !== '') return
+
+    tile.classList.add('note')
+    tile.style.color = 'blue'
+    let noteValues = Array.from(tile.dataset.note);
+
+    if (tile.innerHTML == '') {
+        for (let i = 1; i <= 9; i++) {
+            const element = document.createElement('div')
+            element.value = i
+            element.style.pointerEvents = 'none'
+            if (value == i) element.innerText = i
+            tile.appendChild(element)
+        }
+        noteValues = [value]
+    } else {
+        for (const t of tile.children) {
+            if (t.value == value && t.innerText == '') {
+                t.innerText = value
+                noteValues.push(value) 
+            } else if (t.innerText == value) {
+                t.innerText = ''
+                let index = noteValues.indexOf(value)
+                noteValues.pop(index)
+            }
+
+        }
+    }
+
+    tile.dataset.note = [...new Set(noteValues)].join('')
+}
+
+function removeNotes(tile) {
+    let value = tile.innerText
+    let adjacentTiles = tiles.filter(t => {return t.dataset.note.includes(value) && (t.id[0] == tile.id[0] || t.id[1] == tile.id[1])})
+    for (const t of adjacentTiles) takeNote(t, value)
+}
+
+sudoku.randomizeMap(stageNumber, current)
