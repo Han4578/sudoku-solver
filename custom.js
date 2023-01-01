@@ -44,10 +44,10 @@ const sudoku = new Sudoku(tiles, undefined, bigTiles, undefined, undefined, 'val
 for (const t of tiles) {
     t.addEventListener('input', e => {
     sudoku.checkNum(e.target)
-    sudoku.changeFocus(e.target.value);
+    sudoku.findSameValue(e.target.value);
     })
     t.addEventListener('click', e => {
-    sudoku.changeFocus(e.target.value);
+    sudoku.findSameValue(e.target.value);
     })
 }
 

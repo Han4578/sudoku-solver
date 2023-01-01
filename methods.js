@@ -74,7 +74,7 @@ export class Sudoku {
         this.difficulty = d.innerText
         this.randomizeMap(stageNumber, current)
     }
-
+    
     randomizeMap(stageNumber, current) {
         let newMap = []
         let mapList = this.maps.filter(m => {
@@ -147,6 +147,26 @@ export class Sudoku {
             }
         }
         return count
+    }
+
+    checkNum(tile) {
+        let value = tile.value
+        if (value > 9) {
+            if (tile.dataset.previousNum.includes(value[0])) value = value[1]
+            if (tile.dataset.previousNum.includes(value[1])) value = value[0]
+            if (value > 9) value = ''
+        }
+        if (value.includes('0')) value = value.replace(0, '') 
+        if (value < 0) value = 9 
+        tile.value = value
+        tile.dataset.previousNum = value
+    }
+
+    findSameValue(value) {
+        for (const t of this.tiles) {
+            t.style.backgroundColor = 'transparent';
+            t.style.backgroundColor = (((t.innerText == value || t.value == value) ?? t.dataset.note.includes(value)) && value !== '') ? 'lightgrey' : 'transparent';
+        }
     }
 
     groupRemove(group, exceptions, num) {

@@ -78,7 +78,7 @@ for (const d of difficultyButtons) {
 }
 
 document.addEventListener('click', e => {
-    findSameValue(e.target);
+    if (!e.target.classList.contains('note'))sudoku.findSameValue(e.target.value);
 })
 
 reset.addEventListener('click', resetEventListener)
@@ -119,7 +119,7 @@ function hideAns() {
     })
     for (const t of filledTiles) {
         t.innerText = t.dataset.userAns
-        checkNum(t, allowCheckErrors)
+        checkforErrors(t, allowCheckErrors)
         if (t.dataset.note !== '') {  
             for (const n of Array.from(t.dataset.note)) {
                 takeNote(t, n)
@@ -153,7 +153,7 @@ function changeFocus(tile) {
 
 }
 
-function checkNum(tile) {
+function checkforErrors(tile) {
     let value = parseFloat(tile.innerText)
     let adjacentTiles = tiles.filter(t => {
         return t.innerText !== '' && (tile.id[0] == t.id[0] || tile.id[1] == t.id[1] || tile.parentElement == t.parentElement) && tile !== t
@@ -165,45 +165,41 @@ function checkNum(tile) {
     tile.dataset.error = (impossibleNum.includes(value)) ? true : false;
 }
 
-function findSameValue(tile) {
-    let value = tile.value
-
-    for (const t of tiles) {
-        t.style.backgroundColor = 'transparent';
-        t.style.backgroundColor = ((t.innerText == value || t.dataset.note.includes(value)) && value !== '') ? 'lightgrey' : 'transparent';
-    }
-}
-
 function inputValue(value) {
-    if (!['Backspace', 'p', 'm', 't', 'r', 'a'].includes(value) && isNaN(value) || value == ' ' || value == 0) return
-    let focusedTile = tiles.filter(t => {
-        return t.classList.contains('focus')
-    })
-
-    if (focusedTile == '') return
-    focusedTile = focusedTile[0]
-    
+    if (!['Backspace', 'p', 'P', 'm', 'M', 't', 'T', 'r', 'R', 'a', 'A', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(value) && isNaN(value) || value == ' ' || value == 0) return
     if (isNaN(value) && value !== 'Backspace') {
         switch (value) {
-            case 'p':
+            case 'p', 'P':
                 notesEventListener()
                 notes.checked = !notes.checked
                 break;
-            case 'm':
+            case 'm', 'M':
                 errorEventListener()
                 error.checked = !error.checked
                 break;
-            case 't':
+            case 't', 'T':
                 timerEventListener()
                 timerCheckbox.checked = !timerCheckbox.checked
                 break;
-            case 'r':
+            case 'r', 'R':
                 resetEventListener()
                 reset.checked = !reset.checked
                 break;
-            case 'a':
+            case 'a', 'A':
                 startEventListener()
                 start.checked = !start.checked
+                break;
+            case 'ArrowLeft':
+                move('left')
+                break;
+            case 'ArrowRight':
+                move('right')
+                break;
+            case 'ArrowUp':
+                move('up')
+                break;
+            case 'ArrowDown':
+                move('down')
                 break;
             default:
                 break;
@@ -211,13 +207,20 @@ function inputValue(value) {
         return
     }
 
+    let focusedTile = tiles.filter(t => {
+        return t.classList.contains('focus')
+    })
+
+    if (focusedTile == '' || isShownAns) return
+    focusedTile = focusedTile[0]
+
     if (focusedTile.classList.contains('preset')) return
 
-    if (focusedTile.value == value || value == 'Backspace') {
+    if ((!isTakingNotes && focusedTile.value == value) || value == 'Backspace') {
         focusedTile.innerText = ''
         focusedTile.value = ''
         focusedTile.dataset.note = ''
-        findSameValue(focusedTile)
+        sudoku.findSameValue(focusedTile.value)
         return
     }
 
@@ -234,11 +237,11 @@ function inputValue(value) {
     }
     focusedTile.innerText = value
     focusedTile.value = value
-    checkNum(focusedTile)
+    checkforErrors(focusedTile)
     if (focusedTile.style.color == 'blue') {
         removeNotes(focusedTile)
     }
-    findSameValue(focusedTile)
+    sudoku.findSameValue(focusedTile.value)
     checkforWin()
 }
 
@@ -284,6 +287,40 @@ function removeNotes(tile) {
     }
 }
 
+function move(direction) {
+    let focusedTile = tiles.filter(t => {
+        return t.classList.contains('focus')
+    })[0]
+    if (focusedTile == '') return
+    let x = focusedTile.id.charCodeAt(0)
+    let y = parseFloat(focusedTile.id[1])
+
+    let nextTile = focusedTile
+
+    switch (direction) {
+        case 'left':
+            if (x > 97) nextTile = document.getElementById(String.fromCharCode(x - 1) + y)
+            break;
+        case 'right':
+            if (x < 105) nextTile = document.getElementById(String.fromCharCode(x + 1) + y)
+            break;
+        case 'up':
+            if (y > 1) nextTile = document.getElementById(String.fromCharCode(x) + (y - 1))
+            break;
+        case 'down':
+            if (y < 9) nextTile = document.getElementById(String.fromCharCode(x) + (y + 1))
+            break;
+        default:
+            break;
+    }
+    for (const t of tiles) {
+        t.classList.remove('focus')
+    }
+    nextTile.classList.add('focus')
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+
 function resetEventListener() {
     hideAns()
     sudoku.resetSolve()
@@ -305,7 +342,7 @@ function startEventListener() {
 function errorEventListener() {
     allowCheckErrors = !allowCheckErrors
     for (let t of tiles) {
-        checkNum(t)
+        checkforErrors(t)
     }
 }
 

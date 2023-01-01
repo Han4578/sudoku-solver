@@ -7,6 +7,7 @@ let single = document.getElementById('single')
 let reset = document.getElementById('reset')
 let randomize = document.querySelector('.swap')
 let current = document.getElementById('current')
+let number = document.getElementById('number')
 let difficultyButtons = document.querySelectorAll('.difficulty')
 let difficulty = 'Evil'
 let currentMap = []
@@ -53,16 +54,15 @@ const sudoku = new Sudoku(tiles, maps, bigTiles, difficulty, currentMap, 'innerT
 
 for (const d of difficultyButtons) {
     d.addEventListener('click', e => {
-        let newMap = sudoku.changeDifficulty(e.target)
-        current.innerText = "Current difficulty: " + newMap[0]
+        sudoku.changeDifficulty(e.target, current, number)
     })
 }
 
-sudoku.randomizeMap(maps)
+sudoku.randomizeMap(number, current)
 
 //-----------------------------------------------------------------------------------------------------------
 
 start.addEventListener('click', () => {sudoku.startSolve()})
 single.addEventListener('click', () => {sudoku.singleSolve()})
 reset.addEventListener('click', () => {sudoku.resetSolve()})
-randomize.addEventListener('click', () => {sudoku.randomizeMap()})
+randomize.addEventListener('click', () => {sudoku.randomizeMap(number, current)})
