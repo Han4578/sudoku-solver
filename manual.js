@@ -169,23 +169,28 @@ function inputValue(value) {
     if (!['Backspace', 'p', 'P', 'm', 'M', 't', 'T', 'r', 'R', 'a', 'A', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(value) && isNaN(value) || value == ' ' || value == 0) return
     if (isNaN(value) && value !== 'Backspace') {
         switch (value) {
-            case 'p', 'P':
+            case 'p':
+            case 'P':
                 notesEventListener()
                 notes.checked = !notes.checked
                 break;
-            case 'm', 'M':
+            case 'm': 
+            case 'M':
                 errorEventListener()
                 error.checked = !error.checked
                 break;
-            case 't', 'T':
+            case 't':
+            case 'T':
                 timerEventListener()
                 timerCheckbox.checked = !timerCheckbox.checked
                 break;
-            case 'r', 'R':
+            case 'r':
+            case 'R':
                 resetEventListener()
                 reset.checked = !reset.checked
                 break;
-            case 'a', 'A':
+            case 'a':
+            case 'A':
                 startEventListener()
                 start.checked = !start.checked
                 break;
