@@ -31,7 +31,6 @@ export class Sudoku {
         if(this.type !== 'dataset') console.log(this.count + ((this.count == 1) ? ' move' : ' moves'));
     }
 
-
     singleSolve() {
         this.movesMade = 0
         this.findNakedSingles()
@@ -58,7 +57,9 @@ export class Sudoku {
                     break;
                 case 'dataset':
                     t.dataset.ans = ''
+                    t.dataset.note = ''
                     t.value = ''
+                    t.innerText = ''
                     break;
                 default:
                     break;
@@ -95,11 +96,13 @@ export class Sudoku {
                 case 'dataset':
                     t.innerText = ''
                     t.dataset.ans = ''
+                    t.value = ''
                     break;
                 default:
                     break;
             }
             t.classList.remove('preset')
+            t.classList.remove('note')
         }
         for (let i = 2; i < newMap.length; i++) {
             const n = newMap[i]
