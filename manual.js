@@ -78,7 +78,7 @@ for (const d of difficultyButtons) {
 }
 
 document.addEventListener('click', e => {
-    if (!e.target.classList.contains('note'))sudoku.findSameValue(e.target.value);
+    if (!e.target.classList.contains('note'))sudoku.findSameValue((isShownAns && tiles.includes(e.target))? e.target.innerText: e.target.value);
 })
 
 reset.addEventListener('click', resetEventListener)
@@ -110,6 +110,8 @@ function revealAns() {
         t.style.color = 'blue'
     }
     start.innerText = 'Hide Answers (a)'
+    let focusedTile = tiles.filter(t => {return t.classList.contains('focus')})
+    sudoku.findSameValue(focusedTile[0].innerText)
 }
 
 function hideAns() {
@@ -127,6 +129,7 @@ function hideAns() {
         }
     }
     start.innerText = 'Show Answers (a)'
+    sudoku.findSameValue('0')
 }
 
 function checkforWin() {
@@ -148,7 +151,6 @@ function changeFocus(tile) {
     for (const t of tiles) {
         t.classList.remove('focus')
     }
-    if (tile.classList.contains('preset')) return
     tile.classList.add('focus')
 
 }
@@ -322,6 +324,8 @@ function move(direction) {
         t.classList.remove('focus')
     }
     nextTile.classList.add('focus')
+
+    sudoku.findSameValue((isShownAns)? nextTile.innerText: nextTile.value)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
