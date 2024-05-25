@@ -202,7 +202,7 @@ export class Sudoku {
                 })
             let numbers = [...new Set(adjacentTiles.map(t => {
                 return this.getCondition(t)
-            }))] // get their innertext/value
+            }))] // get their innerText/value
             let original = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
             let possibleNum = original.filter(n => { // get all numbers that are not in numbers array
@@ -237,7 +237,7 @@ export class Sudoku {
         }
     }
 
-    findHiddenSingles() { //find tiles where the unplaced number in the bigtile has only one possibility
+    findHiddenSingles() { //find tiles where the unplaced number in the bigTile has only one possibility
         this.updateEmptyTiles()
         for (const bt of this.bigTiles) {
             let empty = this.emptyTiles.filter(t => {
@@ -406,5 +406,4 @@ export let Timer = {
         timer.style.display = (display)? 'inline' : 'none'
     }
 
-}    
-
+}
